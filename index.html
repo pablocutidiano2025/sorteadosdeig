@@ -93,13 +93,13 @@
 
         <!-- Botón para iniciar el sorteo -->
         <button id="drawButton" class="pastel-button w-full py-4 rounded-full text-white text-xl font-bold mb-8 shadow-lg transition-all" style="background-color: var(--pastel-pink);">
-            ¡Elegir al Ganador!
+            ¡Elegir a los Ganadores!
         </button>
 
         <!-- Sección de resultado -->
         <div id="resultsSection" class="relative overflow-hidden p-8 md:p-12 rounded-3xl border-4 border-dashed border-gray-300 min-h-[200px] flex flex-col justify-center items-center opacity-0 transition-opacity duration-500">
-            <h2 class="text-2xl md:text-3xl font-bold mb-4">El/La ganador/a es...</h2>
-            <div id="winnerName" class="text-5xl md:text-6xl font-extrabold text-pastel-blue animate-bounce"></div>
+            <h2 class="text-2xl md:text-3xl font-bold mb-4">Los/as ganadores/as son...</h2>
+            <div id="winnerName" class="text-xl md:text-2xl font-extrabold text-center"></div>
             <!-- Mensaje de felicitación -->
             <p id="congratsMessage" class="text-lg md:text-xl text-gray-600 mt-4"></p>
         </div>
@@ -119,13 +119,11 @@
             for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti-piece';
-                // Corregido: Uso de template literal con backticks (``) para las propiedades de estilo
                 confetti.style.left = `${Math.random() * 100}%`;
                 confetti.style.top = `-${Math.random() * 50}px`;
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 document.body.appendChild(confetti);
 
-                // Opcional: Eliminar el confeti del DOM después de la animación para limpiar la memoria
                 confetti.addEventListener('animationend', () => {
                     confetti.remove();
                 });
@@ -133,7 +131,6 @@
         }
 
         // Función para limpiar el confeti anterior si existe.
-        // No es estrictamente necesaria con el listener de 'animationend', pero es una buena práctica.
         function clearConfetti() {
             const confettiPieces = document.querySelectorAll('.confetti-piece');
             confettiPieces.forEach(piece => piece.remove());
@@ -141,14 +138,14 @@
 
         // Manejador de eventos para el botón de sorteo
         drawButton.addEventListener('click', () => {
-            clearConfetti(); // Limpiar el confeti anterior si existe
+            clearConfetti();
 
             // Obtener la lista de participantes del textarea, eliminando líneas vacías
             const participants = participantsInput.value.split('\n').filter(name => name.trim() !== '');
 
-            // Validar que haya participantes
-            if (participants.length === 0) {
-                winnerNameDiv.textContent = '¡Primero agrega participantes!';
+            // Validar que haya al menos 5 participantes
+            if (participants.length < 5) {
+                winnerNameDiv.textContent = '¡Necesitas al menos 5 participantes para el sorteo!';
                 winnerNameDiv.style.color = 'var(--pastel-pink)';
                 congratsMessage.textContent = '';
                 resultsSection.classList.add('opacity-100');
@@ -156,30 +153,43 @@
                 return;
             }
 
-            // Realizar el sorteo aleatorio
-            const winner = participants[Math.floor(Math.random() * participants.length)];
+            // Seleccionar 5 ganadores únicos
+            const winners = [];
+            const tempParticipants = [...participants]; // Crea una copia para no modificar el original
+
+            for (let i = 0; i < 5; i++) {
+                const randomIndex = Math.floor(Math.random() * tempParticipants.length);
+                const winner = tempParticipants.splice(randomIndex, 1)[0];
+                winners.push(winner);
+            }
 
             // Mostrar la sección de resultados
             resultsSection.classList.add('opacity-100');
             resultsSection.style.borderColor = 'var(--pastel-green)';
             winnerNameDiv.style.color = 'var(--pastel-green)';
 
-            // Efecto de "rodar" el nombre antes de mostrar al ganador
+            // Efecto de "rodar" el nombre antes de mostrar a los ganadores
             let rollCount = 0;
             const rollInterval = setInterval(() => {
                 const rollingWinner = participants[Math.floor(Math.random() * participants.length)];
                 winnerNameDiv.textContent = rollingWinner;
                 rollCount++;
-                if (rollCount > 20) { // Simular 20 "giros" rápidos
+                if (rollCount > 20) {
                     clearInterval(rollInterval);
-                    // Mostrar el nombre del ganador final
-                    winnerNameDiv.textContent = winner;
-                    // Corregido: Uso de template literal con backticks (``) para el mensaje de felicitación
-                    congratsMessage.textContent = `¡Felicidades, ${winner}! 🎉`;
-                    createConfetti(); // Lanzar confeti al revelar al ganador
+                    // Mostrar la lista de ganadores
+                    let winnersListHTML = '<ul class="list-none p-0 m-0">';
+                    winners.forEach(winner => {
+                        winnersListHTML += `<li class="my-2 p-2 rounded-lg bg-pastel-blue text-white text-3xl font-extrabold shadow-md transform transition-transform duration-300 hover:scale-105">${winner}</li>`;
+                    });
+                    winnersListHTML += '</ul>';
+                    winnerNameDiv.innerHTML = winnersListHTML;
+
+                    congratsMessage.textContent = `¡Felicidades a todos los ganadores! 🎉`;
+                    createConfetti(); // Lanzar confeti al revelar a los ganadores
                 }
             }, 50);
         });
     </script>
 </body>
 </html>
+
