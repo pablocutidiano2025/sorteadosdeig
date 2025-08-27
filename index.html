@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteos Mágicos</title>
+    <!-- Incluir Tailwind CSS para el diseño con colores pastel y tipografías -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Incluir la fuente 'Quicksand' de Google Fonts para un estilo aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+        /* Definir una paleta de colores pastel con variables CSS */
+        :root {
+            --pastel-pink: #FFD1DC;
+            --pastel-blue: #BDE0FE;
+            --pastel-green: #98FB98;
+            --pastel-lavender: #E6E6FA;
+            --pastel-yellow: #FFFFE0;
+            --pastel-bg: #F0F8FF; /* Azul cielo pálido */
+        }
+        body {
+            background-color: var(--pastel-bg);
+            font-family: 'Quicksand', sans-serif;
+            color: #4A4A4A; /* Un gris suave para el texto */
+        }
+        .container-wrapper {
+            background-color: white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+        .pastel-button {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pastel-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        /* Estilos para el efecto de confeti */
+        .confetti-piece {
+            position: absolute;
+            background-color: var(--pastel-pink);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: confetti-fall 2s ease-in-out forwards;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Contenedor principal de la aplicación -->
+    <div class="container-wrapper max-w-2xl w-full p-8 md:p-12 rounded-3xl text-center">
+        <!-- Título -->
+        <h1 class="text-4xl md:text-5xl font-bold mb-2">Sorteos Mágicos</h1>
+        <p class="text-lg md:text-xl text-gray-500 mb-8">Elige un ganador de forma aleatoria y justa.</p>
+
+        <!-- Sección para ingresar participantes -->
+        <div class="mb-8 text-left">
+            <label for="participantsInput" class="block text-xl font-medium mb-2">Ingresa a los participantes:</label>
+            <textarea id="participantsInput" rows="6" class="w-full p-4 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-pastel-blue transition-all" placeholder="Escribe o pega los nombres de usuario, uno por línea. Ejemplo:&#10;@usuario1&#10;@usuario2&#10;@usuario3"></textarea>
+            <p class="text-sm text-gray-400 mt-2">Puedes pegar una lista de usuarios de cualquier plataforma.</p>
+        </div>
+
+        <!-- Sección de reglas del sorteo (simulado) -->
+        <div class="mb-8 text-left">
+            <h2 class="text-xl font-medium mb-4">Reglas del Sorteo:</h2>
+            <p class="text-sm text-gray-500 mb-4">Selecciona los requisitos que los participantes deben cumplir. (Esta es una simulación visual).</p>
+            <div class="flex flex-col space-y-3">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="form-checkbox h-5 w-5 rounded-md text-pastel-pink border-2 border-pink-300 transition-all focus:ring-pastel-pink focus:ring-offset-2" checked>
+                    <span class="ml-3 text-lg">Seguir nuestra cuenta</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="form-checkbox h-5 w-5 rounded-md text-pastel-blue border-2 border-blue-300 transition-all focus:ring-pastel-blue focus:ring-offset-2" checked>
+                    <span class="ml-3 text-lg">Dar 'Me gusta' a la publicación</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="form-checkbox h-5 w-5 rounded-md text-pastel-green border-2 border-green-300 transition-all focus:ring-pastel-green focus:ring-offset-2">
+                    <span class="ml-3 text-lg">Etiquetar a un amigo en los comentarios</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="form-checkbox h-5 w-5 rounded-md text-pastel-lavender border-2 border-purple-300 transition-all focus:ring-pastel-lavender focus:ring-offset-2">
+                    <span class="ml-3 text-lg">Compartir en sus historias</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Botón para iniciar el sorteo -->
+        <button id="drawButton" class="pastel-button w-full py-4 rounded-full text-white text-xl font-bold mb-8 shadow-lg transition-all" style="background-color: var(--pastel-pink);">
+            ¡Elegir al Ganador!
+        </button>
+
+        <!-- Sección de resultado -->
+        <div id="resultsSection" class="relative overflow-hidden p-8 md:p-12 rounded-3xl border-4 border-dashed border-gray-300 min-h-[200px] flex flex-col justify-center items-center opacity-0 transition-opacity duration-500">
+            <h2 class="text-2xl md:text-3xl font-bold mb-4">El/La ganador/a es...</h2>
+            <div id="winnerName" class="text-5xl md:text-6xl font-extrabold text-pastel-blue animate-bounce"></div>
+            <!-- Mensaje de felicitación -->
+            <p id="congratsMessage" class="text-lg md:text-xl text-gray-600 mt-4"></p>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de la aplicación en JavaScript
+        const drawButton = document.getElementById('drawButton');
+        const participantsInput = document.getElementById('participantsInput');
+        const resultsSection = document.getElementById('resultsSection');
+        const winnerNameDiv = document.getElementById('winnerName');
+        const congratsMessage = document.getElementById('congratsMessage');
+
+        // Función para crear confeti
+        function createConfetti() {
+            const colors = ['var(--pastel-pink)', 'var(--pastel-blue)', 'var(--pastel-green)', 'var(--pastel-lavender)'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                // Corregido: Uso de template literal con backticks (``) para las propiedades de estilo
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `-${Math.random() * 50}px`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                document.body.appendChild(confetti);
+
+                // Opcional: Eliminar el confeti del DOM después de la animación para limpiar la memoria
+                confetti.addEventListener('animationend', () => {
+                    confetti.remove();
+                });
+            }
+        }
+
+        // Función para limpiar el confeti anterior si existe.
+        // No es estrictamente necesaria con el listener de 'animationend', pero es una buena práctica.
+        function clearConfetti() {
+            const confettiPieces = document.querySelectorAll('.confetti-piece');
+            confettiPieces.forEach(piece => piece.remove());
+        }
+
+        // Manejador de eventos para el botón de sorteo
+        drawButton.addEventListener('click', () => {
+            clearConfetti(); // Limpiar el confeti anterior si existe
+
+            // Obtener la lista de participantes del textarea, eliminando líneas vacías
+            const participants = participantsInput.value.split('\n').filter(name => name.trim() !== '');
+
+            // Validar que haya participantes
+            if (participants.length === 0) {
+                winnerNameDiv.textContent = '¡Primero agrega participantes!';
+                winnerNameDiv.style.color = 'var(--pastel-pink)';
+                congratsMessage.textContent = '';
+                resultsSection.classList.add('opacity-100');
+                resultsSection.style.borderColor = 'var(--pastel-pink)';
+                return;
+            }
+
+            // Realizar el sorteo aleatorio
+            const winner = participants[Math.floor(Math.random() * participants.length)];
+
+            // Mostrar la sección de resultados
+            resultsSection.classList.add('opacity-100');
+            resultsSection.style.borderColor = 'var(--pastel-green)';
+            winnerNameDiv.style.color = 'var(--pastel-green)';
+
+            // Efecto de "rodar" el nombre antes de mostrar al ganador
+            let rollCount = 0;
+            const rollInterval = setInterval(() => {
+                const rollingWinner = participants[Math.floor(Math.random() * participants.length)];
+                winnerNameDiv.textContent = rollingWinner;
+                rollCount++;
+                if (rollCount > 20) { // Simular 20 "giros" rápidos
+                    clearInterval(rollInterval);
+                    // Mostrar el nombre del ganador final
+                    winnerNameDiv.textContent = winner;
+                    // Corregido: Uso de template literal con backticks (``) para el mensaje de felicitación
+                    congratsMessage.textContent = `¡Felicidades, ${winner}! 🎉`;
+                    createConfetti(); // Lanzar confeti al revelar al ganador
+                }
+            }, 50);
+        });
+    </script>
+</body>
+</html>
