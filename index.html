@@ -177,9 +177,10 @@
                 if (rollCount > 20) {
                     clearInterval(rollInterval);
                     // Mostrar la lista de ganadores
-                    let winnersListHTML = '<ul class="list-none p-0 m-0 text-white">'; // Se agregó 'text-white' aquí
+                    let winnersListHTML = '<ul class="list-none p-0 m-0">'; // Se eliminó 'text-white' de aquí
                     winners.forEach(winner => {
-                        winnersListHTML += `<li class="my-2 p-2 rounded-lg bg-pastel-blue text-3xl font-extrabold shadow-md transform transition-transform duration-300 hover:scale-105">${winner}</li>`;
+                        // Se agregó 'text-black' a cada elemento de la lista para asegurar el color de la fuente
+                        winnersListHTML += `<li class="my-2 p-2 rounded-lg bg-pastel-blue text-black text-3xl font-extrabold shadow-md transform transition-transform duration-300 hover:scale-105">${winner}</li>`;
                     });
                     winnersListHTML += '</ul>';
                     winnerNameDiv.innerHTML = winnersListHTML;
